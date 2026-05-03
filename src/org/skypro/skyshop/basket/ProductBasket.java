@@ -3,10 +3,9 @@ package org.skypro.skyshop.basket;
 import org.skypro.skyshop.product.Product;
 
 public class ProductBasket {
-
     private Product[] basket = new Product[5];
 
-    public void addBasket(Product product) { // Метод добавления продукта в корзину
+    public void addBasket(Product product) {
         int i = 0;
         while (i < basket.length) {
             if (basket[i] == null) {
@@ -18,19 +17,16 @@ public class ProductBasket {
         System.out.println("Невозможно добавить продукт");
     }
 
-    public int allPriceBasket() // Метод получения общей стоимости корзины
-    {
+    public int allPriceBasket() {
         int allPrice = 0;
-        int i = 0;
-        while (i < basket.length) {
-
-            if (basket[i] != null) {
-                allPrice += basket[i].getPrice();
+        for (Product product : basket) {
+            if (product != null) {
+                allPrice += product.getPrice();
             }
-            i++;
         }
-        if (allPrice <= 0)
+        if (allPrice <= 0) {
             System.out.println("в корзине пусто");
+        }
         return allPrice;
     }
 
@@ -39,40 +35,31 @@ public class ProductBasket {
             System.out.println("В корзине пусто");
             return;
         }
-        int i = 0;
-        while (i < basket.length) {
-            if (basket[i] != null)
-                System.out.println(basket[i].getName() + ": " + basket[i].getPrice());
-            i++;
+        int specialCount = 0;
+        for (Product product : basket) {
+            if (product != null) {
+                System.out.println(product); // используется toString()
+                if (product.isSpecial()) {
+                    specialCount++;
+                }
+            }
         }
         System.out.println("Итого: " + allPriceBasket());
+        System.out.println("Специальных товаров: " + specialCount);
     }
 
-    public boolean hasProduct(String Name) // Метод, проверяющий продукт в корзине по имени
-    {
-        int i = 0;
-        while (i < basket.length) {
-            if (basket[i] != null) {
-                if (basket[i].getName().equals(Name)   )
-                    return true;
+    public boolean hasProduct(String name) {
+        for (Product product : basket) {
+            if (product != null && product.getName().equals(name)) {
+                return true;
             }
-            i++;
         }
         return false;
     }
 
-    public void clearBasket() // Метод очистки корзины
-    {
-        int i = 0;
-        while (i < basket.length) {
+    public void clearBasket() {
+        for (int i = 0; i < basket.length; i++) {
             basket[i] = null;
-            i++;
         }
-        //_basket = new BasketItem[5];
     }
-
-//    private class BasketItem {
-//        public String name;
-//        public int price;
-//    }
 }
