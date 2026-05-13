@@ -7,11 +7,66 @@ import org.skypro.skyshop.product.FixPriceProduct;
 import org.skypro.skyshop.product.Article;
 import org.skypro.skyshop.search.Searchable;
 import org.skypro.skyshop.search.SearchEngine;
+import org.skypro.skyshop.search.BestResultNotFound;
 
 import java.util.Arrays;
 
 public class App {
     public static void main(String[] args) {
+        // Демонстрация проверок с try-catch
+        System.out.println("=== Проверка невалидных данных ===");
+
+        try {
+            new SimpleProduct(null, 100);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            new SimpleProduct("", 100);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            new SimpleProduct("   ", 100);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            new SimpleProduct("Товар", 0);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            new SimpleProduct("Товар", -10);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            new DiscountedProduct("Товар", 0, 10);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            new DiscountedProduct("Товар", 100, -5);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            new DiscountedProduct("Товар", 100, 101);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+
+        System.out.println();
+
+        // Существующий код корзины (без изменений)
         ProductBasket basket = new ProductBasket();
 
         SimpleProduct apple = new SimpleProduct("Яблоко", 100);
@@ -49,29 +104,31 @@ public class App {
         System.out.println("\n=== Стоимость пустой корзины ===");
         System.out.println("Стоимость: " + basket.allPriceBasket());
 
-        ////////////////////////////////////
-
+        // Поисковый движок
         SearchEngine searchEngine = createSearchEngine(apple, bread, milk, cheese, juice, chocolate);
 
-        System.out.println("\n=== Поиск: 'молок' ===");
-        Searchable[] res1 = searchEngine.search("молок");
-        System.out.println(Arrays.toString(res1));
+        System.out.println("\n=== Обычный поиск (массив из 5) ===");
+        System.out.println("Поиск 'молок': " + Arrays.toString(searchEngine.search("молок")));
+        System.out.println("Поиск 'сыр': " + Arrays.toString(searchEngine.search("сыр")));
+        System.out.println("Поиск 'Java': " + Arrays.toString(searchEngine.search("Java")));
+        System.out.println("Поиск 'яблоко': " + Arrays.toString(searchEngine.search("яблоко")));
+        System.out.println("Поиск 'шоколад': " + Arrays.toString(searchEngine.search("шоколад")));
 
-        System.out.println("\n=== Поиск: 'сыр' ===");
-        Searchable[] res2 = searchEngine.search("сыр");
-        System.out.println(Arrays.toString(res2));
+        // Демонстрация нового метода searchBest
+        System.out.println("\n=== Поиск наиболее подходящего элемента ===");
+        try {
+            Searchable best = searchEngine.searchBest("молоко");
+            System.out.println("Лучший результат для 'молоко': " + best.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println(e.getMessage());
+        }
 
-        System.out.println("\n=== Поиск: 'Java' ===");
-        Searchable[] res3 = searchEngine.search("Java");
-        System.out.println(Arrays.toString(res3));
-
-        System.out.println("\n=== Поиск: 'яблоко' ===");
-        Searchable[] res4 = searchEngine.search("яблоко");
-        System.out.println(Arrays.toString(res4));
-
-        System.out.println("\n=== Поиск: 'шоколад' ===");
-        Searchable[] res5 = searchEngine.search("шоколад");
-        System.out.println(Arrays.toString(res5));
+        try {
+            Searchable best = searchEngine.searchBest("газировка");
+            System.out.println("Лучший результат: " + best.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private static SearchEngine createSearchEngine(Searchable... products) {

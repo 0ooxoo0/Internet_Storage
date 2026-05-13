@@ -1,32 +1,28 @@
 package org.skypro.skyshop.search;
 
 public class SearchEngine {
-    private final Searchable[] items;   // хранилище
-    private int size;                   // текущее количество добавленных объектов
+    private final Searchable[] items;
+    private int size;
 
-    // Конструктор принимает размер хранилища
     public SearchEngine(int capacity) {
         items = new Searchable[capacity];
         size = 0;
     }
 
-    // Добавление объекта в массив
     public void add(Searchable item) {
         if (size < items.length) {
             items[size] = item;
             size++;
-        } // можно добавить обработку переполнения
+        }
     }
 
-    // Поиск: возвращает массив до 5 первых подходящих элементов
     public Searchable[] search(String query) {
-        Searchable[] results = new Searchable[5]; // фиксированный размер
+        Searchable[] results = new Searchable[5];
         int found = 0;
 
         for (int i = 0; i < size; i++) {
             Searchable item = items[i];
-            // проверяем, содержит ли searchTerm искомую подстроку
-            if (item.getSearchTerm().contains(query)) {
+            if (item != null && item.getSearchTerm().contains(query)) {
                 results[found] = item;
                 found++;
                 if (found == 5) {
@@ -34,7 +30,43 @@ public class SearchEngine {
                 }
             }
         }
-        // если найдено меньше 5, остальные элементы останутся null – это допустимо
         return results;
+    }
+
+    public Searchable searchBest(String query) throws BestResultNotFound {
+        Searchable best = null;
+        int maxCount = 0;
+
+        for (int i = 0; i < size; i++) {
+            Searchable item = items[i];
+            if (item == null) continue;
+
+            int count = countOccurrences(item.getSearchTerm(), query);
+            if (count > maxCount) {
+                maxCount = count;
+                best = item;
+            }
+        }
+
+        if (best == null || maxCount == 0) {
+            throw new BestResultNotFound(query);
+        }
+        return best;
+    }
+
+    private int countOccurrences(String str, String substring) {
+        int count = 0;
+        int index = 0;
+        int subLength = substring.length();
+
+        while (true) {
+            int foundIndex = str.indexOf(substring, index);
+            if (foundIndex == -1) {
+                break;
+            }
+            count++;
+            index = foundIndex + subLength;
+        }
+        return count;
     }
 }
