@@ -1,33 +1,24 @@
 package org.skypro.skyshop.search;
 
-public class SearchEngine {
-    private final Searchable[] items;
-    private int size;
+import java.util.LinkedList;
+import java.util.List;
 
-    public SearchEngine(int capacity) {
-        items = new Searchable[capacity];
-        size = 0;
-    }
+public class SearchEngine {
+    private List<Searchable> items = new LinkedList<>(); // LinkedList согласно критериям
 
     public void add(Searchable item) {
-        if (size < items.length) {
-            items[size] = item;
-            size++;
-        }
+        items.add(item);
     }
 
-    public Searchable[] search(String query) {
-        Searchable[] results = new Searchable[5];
-        int found = 0;
-
-        for (int i = 0; i < size; i++) {
-            Searchable item = items[i];
-            if (item != null && item.getSearchTerm().contains(query)) {
-                results[found] = item;
-                found++;
-                if (found == 5) {
-                    break;
-                }
+    /**
+     * Поиск всех объектов, у которых searchTerm содержит подстроку query.
+     * @return список всех подходящих Searchable (может быть пустым)
+     */
+    public List<Searchable> search(String query) {
+        List<Searchable> results = new LinkedList<>();
+        for (Searchable item : items) {
+            if (item.getSearchTerm().contains(query)) {
+                results.add(item);
             }
         }
         return results;
@@ -36,18 +27,13 @@ public class SearchEngine {
     public Searchable searchBest(String query) throws BestResultNotFound {
         Searchable best = null;
         int maxCount = 0;
-
-        for (int i = 0; i < size; i++) {
-            Searchable item = items[i];
-            if (item == null) continue;
-
+        for (Searchable item : items) {
             int count = countOccurrences(item.getSearchTerm(), query);
             if (count > maxCount) {
                 maxCount = count;
                 best = item;
             }
         }
-
         if (best == null || maxCount == 0) {
             throw new BestResultNotFound(query);
         }
@@ -58,12 +44,9 @@ public class SearchEngine {
         int count = 0;
         int index = 0;
         int subLength = substring.length();
-
         while (true) {
             int foundIndex = str.indexOf(substring, index);
-            if (foundIndex == -1) {
-                break;
-            }
+            if (foundIndex == -1) break;
             count++;
             index = foundIndex + subLength;
         }

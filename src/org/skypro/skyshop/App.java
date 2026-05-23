@@ -8,8 +8,10 @@ import org.skypro.skyshop.product.Article;
 import org.skypro.skyshop.search.Searchable;
 import org.skypro.skyshop.search.SearchEngine;
 import org.skypro.skyshop.search.BestResultNotFound;
+import org.skypro.skyshop.product.Product;
 
-import java.util.Arrays;
+
+import java.util.List;
 
 public class App {
     public static void main(String[] args) {
@@ -66,7 +68,7 @@ public class App {
 
         System.out.println();
 
-        // Существующий код корзины (без изменений)
+        // Создание продуктов и корзины
         ProductBasket basket = new ProductBasket();
 
         SimpleProduct apple = new SimpleProduct("Яблоко", 100);
@@ -74,16 +76,13 @@ public class App {
         SimpleProduct milk = new SimpleProduct("Молоко", 80);
         FixPriceProduct cheese = new FixPriceProduct("Сыр");
         DiscountedProduct juice = new DiscountedProduct("Сок", 120, 10);
+        SimpleProduct chocolate = new SimpleProduct("Шоколад", 150); // будет использован только в поисковике
 
         basket.addBasket(apple);
         basket.addBasket(bread);
         basket.addBasket(milk);
         basket.addBasket(cheese);
         basket.addBasket(juice);
-
-        System.out.println("=== Попытка добавить в полную корзину ===");
-        SimpleProduct chocolate = new SimpleProduct("Шоколад", 150);
-        basket.addBasket(chocolate);
 
         System.out.println("\n=== Содержимое корзины ===");
         basket.printBasket();
@@ -94,6 +93,33 @@ public class App {
         System.out.println("\n=== Поиск товара ===");
         System.out.println("Молоко есть в корзине? " + basket.hasProduct("Молоко"));
         System.out.println("Шоколад есть в корзине? " + basket.hasProduct("Шоколад"));
+
+        // Демонстрация удаления продуктов по имени
+        System.out.println("\n=== Удаление продуктов по имени ===");
+
+        List<Product> removed = basket.removeProductsByName("Яблоко");
+        System.out.println("Удалённые продукты:");
+        if (removed.isEmpty()) {
+            System.out.println("Список пуст");
+        } else {
+            for (Product p : removed) {
+                System.out.println(p);
+            }
+        }
+        System.out.println("Содержимое корзины после удаления:");
+        basket.printBasket();
+
+        List<Product> removed2 = basket.removeProductsByName("Груша");
+        System.out.println("Удалённые продукты (Груша):");
+        if (removed2.isEmpty()) {
+            System.out.println("Список пуст");
+        } else {
+            for (Product p : removed2) {
+                System.out.println(p);
+            }
+        }
+        System.out.println("Содержимое корзины после попытки удаления несуществующего:");
+        basket.printBasket();
 
         System.out.println("\n=== Очистка корзины ===");
         basket.clearBasket();
@@ -107,14 +133,14 @@ public class App {
         // Поисковый движок
         SearchEngine searchEngine = createSearchEngine(apple, bread, milk, cheese, juice, chocolate);
 
-        System.out.println("\n=== Обычный поиск (массив из 5) ===");
-        System.out.println("Поиск 'молок': " + Arrays.toString(searchEngine.search("молок")));
-        System.out.println("Поиск 'сыр': " + Arrays.toString(searchEngine.search("сыр")));
-        System.out.println("Поиск 'Java': " + Arrays.toString(searchEngine.search("Java")));
-        System.out.println("Поиск 'яблоко': " + Arrays.toString(searchEngine.search("яблоко")));
-        System.out.println("Поиск 'шоколад': " + Arrays.toString(searchEngine.search("шоколад")));
+        System.out.println("\n=== Обычный поиск (список) ===");
+        System.out.println("Поиск 'молок': " + searchEngine.search("молок"));
+        System.out.println("Поиск 'сыр': " + searchEngine.search("сыр"));
+        System.out.println("Поиск 'Java': " + searchEngine.search("Java"));
+        System.out.println("Поиск 'яблоко': " + searchEngine.search("яблоко"));
+        System.out.println("Поиск 'шоколад': " + searchEngine.search("шоколад"));
 
-        // Демонстрация нового метода searchBest
+        // Демонстрация метода searchBest
         System.out.println("\n=== Поиск наиболее подходящего элемента ===");
         try {
             Searchable best = searchEngine.searchBest("молоко");
@@ -132,7 +158,7 @@ public class App {
     }
 
     private static SearchEngine createSearchEngine(Searchable... products) {
-        SearchEngine engine = new SearchEngine(20);
+        SearchEngine engine = new SearchEngine();
 
         for (Searchable product : products) {
             engine.add(product);
