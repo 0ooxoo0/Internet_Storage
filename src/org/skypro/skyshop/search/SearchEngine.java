@@ -1,27 +1,22 @@
 package org.skypro.skyshop.search;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class SearchEngine {
-    private List<Searchable> items = new LinkedList<>(); // LinkedList согласно критериям
+    private List<Searchable> items = new LinkedList<>();
 
     public void add(Searchable item) {
         items.add(item);
     }
 
-    /**
-     * Поиск всех объектов, у которых searchTerm содержит подстроку query.
-     * @return список всех подходящих Searchable (может быть пустым)
-     */
-    public List<Searchable> search(String query) {
-        List<Searchable> results = new LinkedList<>();
+    public Map<String, Searchable> search(String query) {
+        Map<String, Searchable> result = new TreeMap<>();
         for (Searchable item : items) {
             if (item.getSearchTerm().contains(query)) {
-                results.add(item);
+                result.put(item.getName(), item);
             }
         }
-        return results;
+        return result;
     }
 
     public Searchable searchBest(String query) throws BestResultNotFound {

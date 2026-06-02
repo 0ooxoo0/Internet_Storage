@@ -10,8 +10,8 @@ import org.skypro.skyshop.search.SearchEngine;
 import org.skypro.skyshop.search.BestResultNotFound;
 import org.skypro.skyshop.product.Product;
 
-
 import java.util.List;
+import java.util.Map;
 
 public class App {
     public static void main(String[] args) {
@@ -133,12 +133,37 @@ public class App {
         // Поисковый движок
         SearchEngine searchEngine = createSearchEngine(apple, bread, milk, cheese, juice, chocolate);
 
-        System.out.println("\n=== Обычный поиск (список) ===");
-        System.out.println("Поиск 'молок': " + searchEngine.search("молок"));
-        System.out.println("Поиск 'сыр': " + searchEngine.search("сыр"));
-        System.out.println("Поиск 'Java': " + searchEngine.search("Java"));
-        System.out.println("Поиск 'яблоко': " + searchEngine.search("яблоко"));
-        System.out.println("Поиск 'шоколад': " + searchEngine.search("шоколад"));
+        System.out.println("\n=== Обычный поиск (сортированная мапа) ===");
+
+        System.out.println("Поиск 'молок':");
+        Map<String, Searchable> res1 = searchEngine.search("молок");
+        for (Searchable s : res1.values()) {
+            System.out.println(s.getStringRepresentation());
+        }
+
+        System.out.println("Поиск 'сыр':");
+        Map<String, Searchable> res2 = searchEngine.search("сыр");
+        for (Searchable s : res2.values()) {
+            System.out.println(s.getStringRepresentation());
+        }
+
+        System.out.println("Поиск 'Java':");
+        Map<String, Searchable> res3 = searchEngine.search("Java");
+        for (Searchable s : res3.values()) {
+            System.out.println(s.getStringRepresentation());
+        }
+
+        System.out.println("Поиск 'яблоко':");
+        Map<String, Searchable> res4 = searchEngine.search("яблоко");
+        for (Searchable s : res4.values()) {
+            System.out.println(s.getStringRepresentation());
+        }
+
+        System.out.println("Поиск 'шоколад':");
+        Map<String, Searchable> res5 = searchEngine.search("шоколад");
+        for (Searchable s : res5.values()) {
+            System.out.println(s.getStringRepresentation());
+        }
 
         // Демонстрация метода searchBest
         System.out.println("\n=== Поиск наиболее подходящего элемента ===");
