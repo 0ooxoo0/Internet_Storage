@@ -11,7 +11,7 @@ import org.skypro.skyshop.search.BestResultNotFound;
 import org.skypro.skyshop.product.Product;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 public class App {
     public static void main(String[] args) {
@@ -133,35 +133,35 @@ public class App {
         // Поисковый движок
         SearchEngine searchEngine = createSearchEngine(apple, bread, milk, cheese, juice, chocolate);
 
-        System.out.println("\n=== Обычный поиск (сортированная мапа) ===");
+        System.out.println("\n=== Обычный поиск (сортированный Set) ===");
 
         System.out.println("Поиск 'молок':");
-        Map<String, Searchable> res1 = searchEngine.search("молок");
-        for (Searchable s : res1.values()) {
+        Set<Searchable> res1 = searchEngine.search("молок");
+        for (Searchable s : res1) {
             System.out.println(s.getStringRepresentation());
         }
 
         System.out.println("Поиск 'сыр':");
-        Map<String, Searchable> res2 = searchEngine.search("сыр");
-        for (Searchable s : res2.values()) {
+        Set<Searchable> res2 = searchEngine.search("сыр");
+        for (Searchable s : res2) {
             System.out.println(s.getStringRepresentation());
         }
 
         System.out.println("Поиск 'Java':");
-        Map<String, Searchable> res3 = searchEngine.search("Java");
-        for (Searchable s : res3.values()) {
+        Set<Searchable> res3 = searchEngine.search("Java");
+        for (Searchable s : res3) {
             System.out.println(s.getStringRepresentation());
         }
 
         System.out.println("Поиск 'яблоко':");
-        Map<String, Searchable> res4 = searchEngine.search("яблоко");
-        for (Searchable s : res4.values()) {
+        Set<Searchable> res4 = searchEngine.search("яблоко");
+        for (Searchable s : res4) {
             System.out.println(s.getStringRepresentation());
         }
 
         System.out.println("Поиск 'шоколад':");
-        Map<String, Searchable> res5 = searchEngine.search("шоколад");
-        for (Searchable s : res5.values()) {
+        Set<Searchable> res5 = searchEngine.search("шоколад");
+        for (Searchable s : res5) {
             System.out.println(s.getStringRepresentation());
         }
 

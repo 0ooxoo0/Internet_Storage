@@ -3,17 +3,29 @@ package org.skypro.skyshop.search;
 import java.util.*;
 
 public class SearchEngine {
-    private List<Searchable> items = new LinkedList<>();
+    private final Set<Searchable> items = new HashSet<>();
 
     public void add(Searchable item) {
-        items.add(item);
+        items.add(item);   // дубликаты по имени не добавятся благодаря equals/hashCode
     }
 
-    public Map<String, Searchable> search(String query) {
-        Map<String, Searchable> result = new TreeMap<>();
+    /**
+     * Поиск объектов, у которых searchTerm содержит подстроку query.
+     * @return TreeSet, отсортированный по длине имени по убыванию,
+     *         а при равной длине — в алфавитном порядке.
+     */
+    public Set<Searchable> search(String query) {
+        // Компаратор: сначала сравнение длин (по убыванию), затем естественный порядок имён
+        Comparator<Searchable> comparator = Comparator
+                .comparingInt((Searchable s) -> s.getName().length())
+                .reversed()
+                .thenComparing(Searchable::getName);
+
+        Set<Searchable> result = new TreeSet<>(comparator);
+
         for (Searchable item : items) {
             if (item.getSearchTerm().contains(query)) {
-                result.put(item.getName(), item);
+                result.add(item);
             }
         }
         return result;
