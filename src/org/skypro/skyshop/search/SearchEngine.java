@@ -1,40 +1,58 @@
 package org.skypro.skyshop.search;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 public class SearchEngine {
-    private final Searchable[] items;   // хранилище
-    private int size;                   // текущее количество добавленных объектов
+    private final Set<Searchable> items = new HashSet<>();
 
-    // Конструктор принимает размер хранилища
-    public SearchEngine(int capacity) {
-        items = new Searchable[capacity];
-        size = 0;
-    }
-
-    // Добавление объекта в массив
     public void add(Searchable item) {
-        if (size < items.length) {
-            items[size] = item;
-            size++;
-        } // можно добавить обработку переполнения
+        items.add(item);   // дубликаты по имени не добавятся благодаря equals/hashCode
     }
 
-    // Поиск: возвращает массив до 5 первых подходящих элементов
-    public Searchable[] search(String query) {
-        Searchable[] results = new Searchable[5]; // фиксированный размер
-        int found = 0;
+    /**
+     * Поиск объектов, у которых searchTerm содержит подстроку query.
+     * @return TreeSet, отсортированный по длине имени по убыванию,
+     *         а при равной длине — в алфавитном порядке.
+     */
+    public Set<Searchable> search(String query) {
+        // Компаратор: сначала сравнение длин (по убыванию), затем естественный порядок имён
+        Comparator<Searchable> comparator = Comparator
+                .comparingInt((Searchable s) -> s.getName().length())
+                .reversed()
+                .thenComparing(Searchable::getName);
 
-        for (int i = 0; i < size; i++) {
-            Searchable item = items[i];
-            // проверяем, содержит ли searchTerm искомую подстроку
-            if (item.getSearchTerm().contains(query)) {
-                results[found] = item;
-                found++;
-                if (found == 5) {
-                    break;
-                }
+        return items.stream()
+                .filter(item -> item.getSearchTerm().contains(query))
+                .collect(Collectors.toCollection(() -> new TreeSet<>(comparator)));
+    }
+
+    public Searchable searchBest(String query) throws BestResultNotFound {
+        Searchable best = null;
+        int maxCount = 0;
+        for (Searchable item : items) {
+            int count = countOccurrences(item.getSearchTerm(), query);
+            if (count > maxCount) {
+                maxCount = count;
+                best = item;
             }
         }
-        // если найдено меньше 5, остальные элементы останутся null – это допустимо
-        return results;
+        if (best == null || maxCount == 0) {
+            throw new BestResultNotFound(query);
+        }
+        return best;
+    }
+
+    private int countOccurrences(String str, String substring) {
+        int count = 0;
+        int index = 0;
+        int subLength = substring.length();
+        while (true) {
+            int foundIndex = str.indexOf(substring, index);
+            if (foundIndex == -1) break;
+            count++;
+            index = foundIndex + subLength;
+        }
+        return count;
     }
 }
