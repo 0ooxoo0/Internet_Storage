@@ -16,16 +16,14 @@ public class ProductBasket {
     }
 
     public int allPriceBasket() {
-        int allPrice = 0;
-        for (List<Product> productList : basket.values()) {
-            for (Product product : productList) {
-                allPrice += product.getPrice();
-            }
-        }
-        if (allPrice == 0) {
+        int total = basket.values().stream()
+                .flatMap(Collection::stream)      // из списков в плоский поток товаров
+                .mapToInt(Product::getPrice)
+                .sum();
+        if (total == 0) {
             System.out.println("в корзине пусто");
         }
-        return allPrice;
+        return total;
     }
 
     public void printBasket() {
@@ -33,17 +31,18 @@ public class ProductBasket {
             System.out.println("В корзине пусто");
             return;
         }
-        int specialCount = 0;
-        for (List<Product> productList : basket.values()) {
-            for (Product product : productList) {
-                System.out.println(product);
-                if (product.isSpecial()) {
-                    specialCount++;
-                }
-            }
-        }
+        basket.values().stream()
+                .flatMap(Collection::stream)
+                .forEach(System.out::println);
         System.out.println("Итого: " + allPriceBasket());
-        System.out.println("Специальных товаров: " + specialCount);
+        System.out.println("Специальных товаров: " + getSpecialCount());
+    }
+
+    private long getSpecialCount() {
+        return basket.values().stream()
+                .flatMap(Collection::stream)
+                .filter(Product::isSpecial)
+                .count();
     }
 
     public boolean hasProduct(String name) {
